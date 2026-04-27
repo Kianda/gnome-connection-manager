@@ -1,9 +1,11 @@
 PKG_NAME=gnome-connection-manager
 PKG_DESCRIPTION="Simple tabbed SSH and telnet connection manager for GTK environments"
 PKG_VERSION=1.2.2
-PKG_MAINTAINER="Renzo Bertuzzi <kuthulu@gmail.com>"
+PKG_MAINTAINER="Renzo Bertuzzi <kuthalu@gmail.com>"
 PKG_ARCH=all
+PKG_ARCH_RPM=noarch
 PKG_DEB=${PKG_NAME}_${PKG_VERSION}_${PKG_ARCH}.deb
+PKG_RPM=${PKG_NAME}-${PKG_VERSION}.${PKG_ARCH_RPM}.rpm
 TMPINSTALLDIR=/tmp/$(PKG_NAME)-fpm-install
 DATADIR=$(TMPINSTALLDIR)/usr/share/$(PKG_NAME)
 FPM_OPTS=-s dir -n $(PKG_NAME) -v $(PKG_VERSION) -C $(TMPINSTALLDIR) \
@@ -11,9 +13,9 @@ FPM_OPTS=-s dir -n $(PKG_NAME) -v $(PKG_VERSION) -C $(TMPINSTALLDIR) \
 	--description $(PKG_DESCRIPTION) \
 	-a $(PKG_ARCH) --license GPLv3 --category net
 
-.PHONY: all deb install translate clean
+.PHONY: all deb rpm install translate clean
 
-all: deb
+all: deb rpm
 
 # Compile .po → .mo translation files
 translate:
@@ -69,8 +71,20 @@ deb: install
 		usr
 	@echo "\033[92mOK: $(PKG_DEB)\033[0m"
 
+# Build the .rpm package using fpm (Fedora/RHEL)
+rpm: install
+	rm -f $(PKG_RPM)
+	fpm -t rpm -p $(PKG_RPM) $(FPM_OPTS) \
+		-a $(PKG_ARCH_RPM) \
+		-d python3 \
+		-d python3-gobject \
+		-d expect \
+		--after-install postinst \
+		usr
+	@echo "\033[92mOK: $(PKG_RPM)\033[0m"
+
 clean:
 	rm -rf $(TMPINSTALLDIR)
-	rm -f $(PKG_DEB)
+	rm -f $(PKG_DEB) $(PKG_RPM)
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 	find . -type f -name '*.pyc' -delete 2>/dev/null || true

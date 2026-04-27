@@ -59,24 +59,44 @@ sudo apt install ./gnome-connection-manager_1.2.2_all.deb
 
 ---
 
-## Running from source (development)
+## Development setup
+
+GCM uses [uv](https://github.com/astral-sh/uv) for dependency management and [just](https://github.com/casey/just) as a task runner.
+
+```bash
+# Install uv (modern Python package manager)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Create development environment
+uv venv --system-site-packages
+uv sync --extra dev
+
+# Prefer just for day-to-day commands
+just run      # Launch the app
+just check    # Lint + typecheck + tests
+just test     # Run the pytest suite
+
+# Or run directly via uv
+uv run python -m gnome_connection_manager
+```
+
+**Development status:**
+- Phase 1 Code Quality: complete
+- Phase 2 Modernization: GTK refactors and logging/tests in progress
+- Phase 3 GTK4 Migration: future
+
+See [docs/DEVELOPING.md](docs/DEVELOPING.md) for the full development guide and [docs/PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md) for project status.
+
+---
+
+## Running from source (quick start)
 
 ```bash
 git clone <this repository>
-
 cd gnome-connection-manager
-
-# Install uv
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Set up the environment
 uv venv --system-site-packages
 uv sync
-
-# Run
 just run
-# or
-uv run python -m gnome_connection_manager
 ```
 
 ---

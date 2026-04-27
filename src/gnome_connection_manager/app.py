@@ -4691,15 +4691,29 @@ class GcmApplication(Gtk.Application):
         if self._controller is not None:
             try:
                 self._controller.on_importar_servidores1_activate(None)
-            except Exception:
+            except Exception as exc:
                 logger.exception("Error during import hosts")
+                self._show_error_dialog("Import failed", str(exc))
 
     def _on_action_export_hosts(self, action, _param):
         if self._controller is not None:
             try:
                 self._controller.on_exportar_servidores1_activate(None)
-            except Exception:
+            except Exception as exc:
                 logger.exception("Error during export hosts")
+                self._show_error_dialog("Export failed", str(exc))
+
+    def _show_error_dialog(self, title, message):
+        dialog = Gtk.MessageDialog(
+            transient_for=self.get_active_window(),
+            modal=True,
+            message_type=Gtk.MessageType.ERROR,
+            buttons=Gtk.ButtonsType.OK,
+            text=title,
+        )
+        dialog.format_secondary_text(message)
+        dialog.run()
+        dialog.destroy()
 
     def _on_action_copy(self, action, _param):
         if self._controller is not None:
